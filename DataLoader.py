@@ -113,7 +113,7 @@ def generate_permutation(gnd, args):
     training_each_class_num = {} ## number of labeled samples for each class
 
     for label in each_class_num.keys():
-        ## Because some classes in CoraFull donot have enough samples, we extract training, valid and test sets via ratio.
+        ## Because some classes in CoraFull donot have enough samples, we extract training sets via ratio.
         if args.dataset_name in ['CoraFull']:
             training_each_class_num[label] = round(each_class_num[label] * 0.07073)
         else:
