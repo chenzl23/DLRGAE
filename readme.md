@@ -32,7 +32,7 @@ Zhaoliang Chen, Zhihao Wu, Shiping Wang and Wenzhong Guo*, Dual Low-Rank Graph A
     - For CoraFull dataset:
     
       ```
-      python main.py --dataset-name=CoraFull --k=45 --feature-normalize=0 --alpha=0.9 --gamma=0.01
+      python main.py --dataset-name=CoraFull --k=45 --feature-normalize=0 --alpha=0.9 --gamma=0.01 --epoch-num=300
       ```
     
     - For Flickr dataset:

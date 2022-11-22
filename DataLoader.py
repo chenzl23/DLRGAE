@@ -83,11 +83,7 @@ def load_classic_data(args):
 
     features, edge_index, gnd, adj, ori_adj, ori_adj_knn, adj_knn = loadMatData(data_path, args)
 
-    if args.dataset_name in ['CoraFull']:
-        ## Because some classes in CoraFull donot have enough samples, we extract training, valid and test sets via ratio.
-        train_mask, valid_mask, test_mask = generate_permutation_for_CoraFull(gnd.numpy(), args)
-    else:
-        train_mask, valid_mask, test_mask = generate_permutation(gnd.numpy(), args)
+    train_mask, valid_mask, test_mask = generate_permutation(gnd.numpy(), args)
 
     data = Data(x=features, edge_index = edge_index, y=gnd, train_mask = train_mask, valid_mask = valid_mask, test_mask = test_mask, adj = adj, ori_adj = ori_adj, ori_adj_knn = ori_adj_knn, adj_knn = adj_knn)
 
@@ -107,45 +103,6 @@ def count_each_class_num(gnd):
     return count_dict
 
 
-def generate_permutation_for_CoraFull(gnd, args):
-    '''
-    Generate permutation for training, validating and testing data.
-    '''
-    N = gnd.shape[0]
-    each_class_num = count_each_class_num(gnd)
-    training_each_class_num = {} ## number of labeled samples for each class
-    val_each_class_num = {}
-    test_each_class_num = {}
-    for label in each_class_num.keys():
-        training_each_class_num[label] = max(round(each_class_num[label] * 0.07055), 1)  # min is 1
-        val_each_class_num[label] = max(round(each_class_num[label] * 0.02526), 1)
-        test_each_class_num[label] = max(round(each_class_num[label] * 0.0506), 1)
-    valid_num = args.num_val
-    test_num = args.num_test
-
-    # index of labeled and unlabeled samples
-    train_mask = torch.from_numpy(np.full((N), False))
-    valid_mask = torch.from_numpy(np.full((N), False))
-    test_mask = torch.from_numpy(np.full((N), False))
-
-    # shuffle the data
-    np.random.seed(0)
-    data_idx = np.random.permutation(range(N))
-
-    # Get training data
-    for idx in data_idx:
-        label = gnd[idx]
-        if (training_each_class_num[label] > 0):
-            training_each_class_num[label] -= 1
-            train_mask[idx] = True
-        elif (valid_num > 0) and test_each_class_num[label] > 0:
-            valid_num  -= 1
-            valid_mask[idx] = True
-        elif (test_num > 0) and test_each_class_num[label] > 0:
-            test_num -= 1
-            test_mask[idx] = True
-    return train_mask, valid_mask, test_mask
-
 
 def generate_permutation(gnd, args):
     '''
@@ -156,9 +113,13 @@ def generate_permutation(gnd, args):
     training_each_class_num = {} ## number of labeled samples for each class
 
     for label in each_class_num.keys():
-        training_each_class_num[label] = args.num_train_per_class
-        valid_num = args.num_val
-        test_num = args.num_test
+        ## Because some classes in CoraFull donot have enough samples, we extract training, valid and test sets via ratio.
+        if args.dataset_name in ['CoraFull']:
+            training_each_class_num[label] = round(each_class_num[label] * 0.07073)
+        else:
+            training_each_class_num[label] = args.num_train_per_class
+    valid_num = args.num_val
+    test_num = args.num_test
 
     # index of labeled and unlabeled samples
     train_mask = torch.from_numpy(np.full((N), False))
