@@ -10,7 +10,7 @@ def parameter_parser():
     parser.add_argument("--dataset-name", nargs = "?", default = "citeseer")
     parser.add_argument("--epoch-num", type = int, default = 200, help = "Number of training epochs. Default is 200.")
     parser.add_argument("--seed", type = int, default = 42, help = "Random seed for train-test split. Default is 42.")
-    parser.add_argument("--dropout", type = float, default = 0.5, help = "Dropout parameter. Default is 0.3.")
+    parser.add_argument("--dropout", type = float, default = 0.5, help = "Dropout parameter. Default is 0.5.")
     parser.add_argument("--learning-rate", type = float, default = 0.01, help = "Learning rate. Default is 0.01.")
 
 
