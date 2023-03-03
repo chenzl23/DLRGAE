@@ -89,10 +89,11 @@ class DLRGAE(nn.Module):
         ## topology graph
         for i in range(len(self.layers) - 1):
             Z = self.relu(self.layers[i](Z, A))
-            Z = F.dropout(Z, training=self.training)
+            Z = F.dropout(Z, p = self.dropout_rate, training=self.training)
         Z = self.layers[-1](Z, A)
 
         Z_emb = F.softmax(Z)
+
         
         estimated_A = Z_emb.matmul(self.Us).matmul(Z_emb.t())
         estimated_A = torch.sigmoid(estimated_A)
